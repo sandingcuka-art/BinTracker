@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BinTrack ZA | South African Bin Schedules</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+
+    <header class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-blue-900 mb-2">BinTrack <span class="text-green-600">ZA</span></h1>
+        <p class="text-gray-600">Never miss a Pikitup collection again.</p>
+    </header>
+
+    <main class="w-full max-w-md">
+        <!-- Suburb Selection -->
+        <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+            <label for="suburbSelect" class="block text-sm font-medium text-gray-700 mb-2">Select your Suburb</label>
+            <select id="suburbSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">-- Choose a Suburb --</option>
+            </select>
+        </div>
+
+        <!-- Dynamic Status Card -->
+        <div id="statusCard" class="hidden bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 transition-all duration-300">
+            <div id="iconContainer" class="text-5xl mb-4"></div>
+            <h2 id="statusTitle" class="text-2xl font-bold mb-2"></h2>
+            <p id="statusMessage" class="text-gray-600 mb-4 font-medium"></p>
+            <div class="py-2 px-4 bg-gray-100 rounded-full inline-block text-sm text-gray-500">
+                <i class="fa-solid fa-truck-front mr-2"></i>Wheelie Bin & Recycling
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-auto pt-10 text-gray-400 text-sm">
+        Built by Sandisiwe Ngcuka
+    </footer>
+
+    <script>
+        const suburbSelect = document.getElementById('suburbSelect');
+        const statusCard = document.getElementById('statusCard');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusMessage = document.getElementById('statusMessage');
+        const iconContainer = document.getElementById('iconContainer');
+
+        // Fetch suburbs on load
+        async function loadSuburbs() {
+            const response = await fetch('http://localhost:8000/suburbs');
+            const suburbs = await response.json();
+            suburbs.forEach(suburb => {
+                const option = document.createElement('option');
+                option.value = suburb;
+                option.textContent = suburb;
+                suburbSelect.appendChild(option);
+            });
+        }
+
+        // Fetch status when suburb changes
+        suburbSelect.addEventListener('change', async (e) => {
+            const suburb = e.target.value;
+            if (!suburb) {
+                statusCard.classList.add('hidden');
+                return;
+            }
+
+            const response = await fetch(`http://localhost:8000/check/${suburb}`);
+            const data = await response.json();
+
+            // Update UI Colors and Content
+            statusCard.classList.remove('hidden');
+            statusTitle.innerText = data.status;
+            statusMessage.innerText = data.message;
+
+            // Reset classes
+            statusCard.className = "bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 transition-all duration-300";
+            
+            if (data.color === 'red') {
+                statusCard.classList.add('border-red-500');
+                statusTitle.classList.add('text-red-600');
+                iconContainer.innerHTML = '🚨';
+            } else if (data.color === 'green') {
+                statusCard.classList.add('border-green-500');
+                statusTitle.classList.add('text-green-600');
+                iconContainer.innerHTML = '✅';
+            } else {
+                statusCard.classList.add('border-blue-500');
+                statusTitle.classList.add('text-blue-600');
+                iconContainer.innerHTML = '📅';
+            }
+        });
+
+        loadSuburbs();
+    </script>
+</body>
+</html>
