@@ -6,55 +6,112 @@
     <title>BinTrack ZA | South African Bin Schedules</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .status-card-transition {
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+<body class="min-h-screen flex flex-col items-center p-6">
 
-    <header class="text-center mb-10">
-        <h1 class="text-4xl font-extrabold text-blue-900 mb-2">BinTrack <span class="text-green-600">ZA</span></h1>
-        <p class="text-gray-600">Never miss a Pikitup collection again.</p>
+    <header class="text-center mb-12 z-10">
+        <h1 class="text-6xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-yellow-200 to-white drop-shadow-lg">
+            🗑️ BinTrack <span class="text-green-300">ZA</span>
+        </h1>
+        <p class="text-white text-lg font-semibold drop-shadow-lg">Never Miss Collection Day Again!</p>
     </header>
 
-    <main class="w-full max-w-md">
-        <!-- Suburb Selection -->
-        <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-            <label for="suburbSelect" class="block text-sm font-medium text-gray-700 mb-2">Select your Suburb</label>
-            <select id="suburbSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="">-- Choose a Suburb --</option>
+    <main class="w-full max-w-2xl">
+        <!-- Area/Suburb Selection Card -->
+        <div class="glass-effect p-8 rounded-2xl shadow-2xl mb-8 border-2 border-purple-300">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-map-marker-alt text-purple-600 text-2xl mr-3"></i>
+                <label for="suburbSelect" class="block text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Select Your Area
+                </label>
+            </div>
+            <select id="suburbSelect" class="w-full p-4 border-2 border-purple-300 rounded-xl focus:ring-4 focus:ring-purple-500 focus:border-transparent outline-none text-lg font-semibold text-gray-700 bg-gradient-to-r from-purple-50 to-pink-50">
+                <option value="">-- Choose Your Suburb --</option>
             </select>
+            <p class="text-sm text-gray-600 mt-3 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                Select your area to see your collection schedule
+            </p>
         </div>
 
         <!-- Dynamic Status Card -->
-        <div id="statusCard" class="hidden bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 transition-all duration-300">
-            <div id="iconContainer" class="text-5xl mb-4"></div>
-            <h2 id="statusTitle" class="text-2xl font-bold mb-2"></h2>
-            <p id="statusMessage" class="text-gray-600 mb-4 font-medium"></p>
-            <div class="py-2 px-4 bg-gray-100 rounded-full inline-block text-sm text-gray-500">
-                <i class="fa-solid fa-truck-front mr-2"></i>Wheelie Bin & Recycling
+        <div id="statusCard" class="hidden status-card-transition glass-effect p-10 rounded-3xl shadow-2xl text-center border-4 border-white">
+            <div id="iconContainer" class="text-7xl mb-6 animate-bounce"></div>
+            <h2 id="statusTitle" class="text-4xl font-black mb-4"></h2>
+            <p id="statusMessage" class="text-lg font-semibold text-gray-700 mb-6"></p>
+            <div id="collectionInfo" class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-xl">
+                    <p class="text-sm text-gray-600 font-medium">Collection Day</p>
+                    <p id="collectionDay" class="text-2xl font-bold text-blue-700"></p>
+                </div>
+                <div class="bg-gradient-to-br from-orange-100 to-orange-200 p-4 rounded-xl">
+                    <p class="text-sm text-gray-600 font-medium">Days Remaining</p>
+                    <p id="daysRemaining" class="text-2xl font-bold text-orange-700"></p>
+                </div>
             </div>
+            <div id="providerInfo" class="bg-gradient-to-r from-teal-100 to-cyan-100 py-3 px-4 bg-gray-100 rounded-xl inline-block text-sm">
+                <i class="fa-solid fa-truck-front mr-2 text-teal-600"></i>
+                <span id="providerName" class="font-bold text-teal-700"></span>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="glass-effect p-10 rounded-3xl shadow-2xl text-center">
+            <div class="text-6xl mb-4 animate-spin">⏳</div>
+            <p class="text-gray-700 font-semibold">Select a suburb to get started...</p>
         </div>
     </main>
 
-    <footer class="mt-auto pt-10 text-gray-400 text-sm">
-        Built by Sandisiwe Ngcuka
+    <footer class="mt-auto pt-12 text-white text-center font-semibold drop-shadow-lg">
+        <p class="mb-1">🚀 Built with ❤️ by Sandisiwe Ngcuka</p>
+        <p class="text-sm opacity-80">Keep South Africa clean, one bin at a time</p>
     </footer>
 
     <script>
         const suburbSelect = document.getElementById('suburbSelect');
         const statusCard = document.getElementById('statusCard');
+        const loadingState = document.getElementById('loadingState');
         const statusTitle = document.getElementById('statusTitle');
         const statusMessage = document.getElementById('statusMessage');
         const iconContainer = document.getElementById('iconContainer');
+        const collectionDay = document.getElementById('collectionDay');
+        const daysRemaining = document.getElementById('daysRemaining');
+        const providerName = document.getElementById('providerName');
 
         // Fetch suburbs on load
         async function loadSuburbs() {
-            const response = await fetch('http://localhost:8000/suburbs');
-            const suburbs = await response.json();
-            suburbs.forEach(suburb => {
-                const option = document.createElement('option');
-                option.value = suburb;
-                option.textContent = suburb;
-                suburbSelect.appendChild(option);
-            });
+            try {
+                const response = await fetch('http://localhost:8000/suburbs');
+                const suburbs = await response.json();
+                suburbs.forEach(suburb => {
+                    const option = document.createElement('option');
+                    option.value = suburb;
+                    option.textContent = suburb;
+                    suburbSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading suburbs:', error);
+            }
         }
 
         // Fetch status when suburb changes
@@ -62,32 +119,47 @@
             const suburb = e.target.value;
             if (!suburb) {
                 statusCard.classList.add('hidden');
+                loadingState.classList.remove('hidden');
                 return;
             }
 
-            const response = await fetch(`http://localhost:8000/check/${suburb}`);
-            const data = await response.json();
+            try {
+                const response = await fetch(`http://localhost:8000/check/${suburb}`);
+                const data = await response.json();
 
-            // Update UI Colors and Content
-            statusCard.classList.remove('hidden');
-            statusTitle.innerText = data.status;
-            statusMessage.innerText = data.message;
+                // Update UI with data
+                loadingState.classList.add('hidden');
+                statusCard.classList.remove('hidden');
+                statusTitle.innerText = data.status;
+                statusMessage.innerText = data.message;
+                collectionDay.innerText = data.collection_day;
+                daysRemaining.innerText = data.days_remaining;
+                providerName.innerText = data.provider;
 
-            // Reset classes
-            statusCard.className = "bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 transition-all duration-300";
-            
-            if (data.color === 'red') {
-                statusCard.classList.add('border-red-500');
-                statusTitle.classList.add('text-red-600');
-                iconContainer.innerHTML = '🚨';
-            } else if (data.color === 'green') {
-                statusCard.classList.add('border-green-500');
-                statusTitle.classList.add('text-green-600');
-                iconContainer.innerHTML = '✅';
-            } else {
-                statusCard.classList.add('border-blue-500');
-                statusTitle.classList.add('text-blue-600');
-                iconContainer.innerHTML = '📅';
+                // Reset classes
+                statusCard.className = "status-card-transition glass-effect p-10 rounded-3xl shadow-2xl text-center border-4";
+                statusTitle.className = "text-4xl font-black mb-4";
+                
+                // Apply color-specific styling
+                if (data.color === 'red') {
+                    statusCard.classList.add('border-red-500', 'bg-gradient-to-br', 'from-red-50', 'to-orange-50');
+                    statusTitle.classList.add('text-red-700');
+                    iconContainer.innerHTML = '🚨';
+                } else if (data.color === 'green') {
+                    statusCard.classList.add('border-green-500', 'bg-gradient-to-br', 'from-green-50', 'to-emerald-50');
+                    statusTitle.classList.add('text-green-700');
+                    iconContainer.innerHTML = '✅';
+                } else if (data.color === 'yellow') {
+                    statusCard.classList.add('border-yellow-500', 'bg-gradient-to-br', 'from-yellow-50', 'to-amber-50');
+                    statusTitle.classList.add('text-yellow-700');
+                    iconContainer.innerHTML = '⚠️';
+                } else {
+                    statusCard.classList.add('border-blue-500', 'bg-gradient-to-br', 'from-blue-50', 'to-cyan-50');
+                    statusTitle.classList.add('text-blue-700');
+                    iconContainer.innerHTML = '📅';
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error);
             }
         });
 
